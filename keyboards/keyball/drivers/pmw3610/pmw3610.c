@@ -122,7 +122,7 @@ bool set_downshift_time(uint8_t sensor, uint8_t reg_addr, uint32_t time) {
              * Rest1 downshift time = PMW3610_REG_RUN_DOWNSHIFT
              *                        * 16 * Rest1_sample_period (default 40 ms)
              */
-            maxtime = 255 * 16 * PMW3610_REST1_SAMPLE_TIME_MS;
+            maxtime = 10 * 16 * PMW3610_REST1_SAMPLE_TIME_MS;
             mintime = 16 * PMW3610_REST1_SAMPLE_TIME_MS;
             break;
 
@@ -131,7 +131,7 @@ bool set_downshift_time(uint8_t sensor, uint8_t reg_addr, uint32_t time) {
              * Rest2 downshift time = PMW3610_REG_REST2_DOWNSHIFT
              *                        * 128 * Rest2 rate (default 100 ms)
              */
-            maxtime = 255 * 128 * PMW3610_REST2_SAMPLE_TIME_MS;
+            maxtime = 10 * 128 * PMW3610_REST2_SAMPLE_TIME_MS;
             mintime = 128 * PMW3610_REST2_SAMPLE_TIME_MS;
             break;
         default:

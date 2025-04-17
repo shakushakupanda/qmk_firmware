@@ -5,8 +5,13 @@
 #include <stdint.h>
 #include "util.h"
 #include "pointing_device.h"
+#include "spi_master.h"
 
 // Register addresses
+
+#define PMW3610_CS_PIN B6
+#define PMW3610_SDIO_PIN B2
+#define PMW3610_SCLK_PIN B1
 
 /* Sensor registers (addresses) */
 #define PMW3610_REG_PRODUCT_ID 0x00

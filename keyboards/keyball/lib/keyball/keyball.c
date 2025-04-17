@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 const uint8_t CPI_DEFAULT    = KEYBALL_CPI_DEFAULT / 100;
-const uint8_t CPI_MAX        = pmw3610_MAXCPI + 1;
+const uint8_t CPI_MAX        = PMW3610_MAX_CPI /100  + 1;
 const uint8_t SCROLL_DIV_MAX = 7;
 
 const uint16_t AML_TIMEOUT_MIN = 100;
@@ -136,18 +136,17 @@ static void add_scroll_div(int8_t delta) {
 
 #if KEYBALL_MODEL == 46
 void keyboard_pre_init_kb(void) {
-    keyball.this_have_ball = pmw3610_init();
+    keyball.this_have_ball = pmw3610_init(0);
     keyboard_pre_init_user();
 }
 #endif
 
 void pointing_device_driver_init(void) {
 #if KEYBALL_MODEL != 46
-    keyball.this_have_ball = pmw3610_init();
+    keyball.this_have_ball = pmw3610_init(0);
 #endif
         pmw3610_set_cpi_wrapper(CPI_DEFAULT - 1);
     }
-}
 
 uint16_t pointing_device_driver_get_cpi(void) {
     return keyball_get_cpi();
@@ -159,8 +158,8 @@ void pointing_device_driver_set_cpi(uint16_t cpi) {
 
 __attribute__((weak)) void keyball_on_apply_motion_to_mouse_move(keyball_motion_t *m, report_mouse_t *r, bool is_left) {
 #if KEYBALL_MODEL == 61 || KEYBALL_MODEL == 39 || KEYBALL_MODEL == 147 || KEYBALL_MODEL == 44
-    r->x = clip2int8(m->y);
-    r->y = clip2int8(m->x);
+    r->y = -clip2int8(m->y);
+    r->x = clip2int8(m->x);
     if (is_left) {
         r->x = -r->x;
         r->y = -r->y;
@@ -259,12 +258,12 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t rep) {
     // fetch from optical sensor.
     if (keyball.this_have_ball) {
         report_mouse_t d = {0};
-        d = mw3610_motion_burst(&d);
+        d = pmw3610_get_report(d);
             ATOMIC_BLOCK_FORCEON {
                 keyball.this_motion.x = add16(keyball.this_motion.x, d.x);
                 keyball.this_motion.y = add16(keyball.this_motion.y, d.y);
             }
-        }
+
     }
     // report mouse event, if keyboard is primary.
     if (is_keyboard_master() && should_report()) {
@@ -549,7 +548,7 @@ void keyball_set_cpi(uint8_t cpi) {
     keyball.cpi_value   = cpi;
     keyball.cpi_changed = true;
     if (keyball.this_have_ball) {
-        pmw3610_cpi_set(cpi == 0 ? CPI_DEFAULT - 1 : cpi - 1);
+        pmw3610_set_cpi_wrapper(cpi == 0 ? CPI_DEFAULT - 1 : cpi - 1);
     }
 }
 
